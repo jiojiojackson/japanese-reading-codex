@@ -25,6 +25,12 @@ function annotationKey(index, char) {
   return `${index}:${char}`;
 }
 
+function resizeRubyInput(input) {
+  const length = Math.max(input.value.length, 1);
+  const width = Math.min(Math.max(length + 0.9, 1.8), 7);
+  input.style.setProperty("--ruby-input-width", `${width}em`);
+}
+
 function renderPreview() {
   preview.replaceChildren();
   const text = sourceText.value;
@@ -47,9 +53,11 @@ function renderPreview() {
     input.inputMode = "text";
     input.autocomplete = "off";
     input.value = annotations.get(key) || "";
+    resizeRubyInput(input);
     input.setAttribute("aria-label", `${char} 的注音`);
     input.addEventListener("input", () => {
       const value = input.value.trim();
+      resizeRubyInput(input);
       if (value) {
         annotations.set(key, value);
       } else {

@@ -45,8 +45,8 @@ h1 {
 }
 
 .document {
-  font-size: clamp(23px, 4vw, 34px);
-  line-height: 2.45;
+  font-size: clamp(18px, 2.4vw, 25px);
+  line-height: 2.05;
   white-space: pre-wrap;
 }
 
