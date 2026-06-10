@@ -154,24 +154,18 @@ textarea {
 }
 
 .preview ruby {
-  align-items: center;
-  display: inline-flex;
-  flex-direction: column-reverse;
-  line-height: 1.05;
+  line-height: 1;
   margin: 0 0.02em;
-  min-width: 1em;
-  vertical-align: -0.12em;
+  ruby-align: center;
+  ruby-position: over;
 }
 
 .preview rb {
-  display: block;
   text-align: center;
 }
 
 .preview rt {
-  display: block;
   line-height: 1;
-  min-height: 18px;
 }
 
 .ruby-input {
