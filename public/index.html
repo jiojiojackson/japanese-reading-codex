@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>日语文本注音</title>
+    <link rel="stylesheet" href="/app.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Furigana Studio</p>
+        <h1>日语文本注音</h1>
+      </div>
+      <nav class="actions">
+        <button id="newButton" type="button">新建</button>
+        <button id="saveButton" type="button" class="primary">保存</button>
+      </nav>
+    </header>
+
+    <main class="workspace">
+      <section class="pane editor-pane" aria-label="文本输入">
+        <div class="pane-head">
+          <h2>原文</h2>
+          <span id="saveState" class="state">未保存</span>
+        </div>
+        <textarea id="sourceText" spellcheck="false" placeholder="粘贴日语文本，例如：今日は日本語を勉強します。"></textarea>
+      </section>
+
+      <section class="pane preview-pane" aria-label="注音预览">
+        <div class="pane-head">
+          <h2>预览与注音</h2>
+          <span class="hint">点击汉字上方输入假名</span>
+        </div>
+        <div id="preview" class="preview" aria-live="polite"></div>
+      </section>
+
+      <aside class="pane library-pane" aria-label="已保存文档">
+        <div class="pane-head">
+          <h2>文档</h2>
+          <button id="refreshButton" type="button" class="ghost">刷新</button>
+        </div>
+        <div id="docsList" class="docs-list"></div>
+      </aside>
+    </main>
+
+    <template id="docItemTemplate">
+      <article class="doc-item">
+        <button class="doc-title" type="button"></button>
+        <time></time>
+        <div class="doc-actions">
+          <button type="button" data-action="share">分享</button>
+          <button type="button" data-action="delete" class="danger">删除</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

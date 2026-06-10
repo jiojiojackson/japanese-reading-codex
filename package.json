@@ -1,0 +1,13 @@
+{
+  "name": "furigana-r2-pages",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public --r2=DOCS_BUCKET",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
