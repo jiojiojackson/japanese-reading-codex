@@ -18,21 +18,21 @@ body {
   font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
   margin: 0;
   min-height: 100vh;
-  padding: 40px 18px;
+  padding: 28px 16px;
 }
 
 main {
   background: var(--paper);
   border: 1px solid #ded8cc;
   margin: 0 auto;
-  max-width: 860px;
+  max-width: 760px;
   min-height: 72vh;
-  padding: clamp(28px, 6vw, 72px);
+  padding: clamp(22px, 4vw, 48px);
 }
 
 h1 {
   font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-  font-size: clamp(24px, 5vw, 36px);
+  font-size: clamp(22px, 3vw, 30px);
   line-height: 1.2;
   margin: 0 0 12px;
 }
@@ -45,8 +45,8 @@ h1 {
 }
 
 .document {
-  font-size: clamp(18px, 2.4vw, 25px);
-  line-height: 2.05;
+  font-size: clamp(17px, 1.55vw, 19px);
+  line-height: 1.95;
   white-space: pre-wrap;
 }
 
@@ -59,6 +59,21 @@ rt {
   font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
   font-size: 0.42em;
   font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 0;
+  }
+
+  main {
+    border: 0;
+    min-height: 100vh;
+  }
+
+  .document {
+    line-height: 1.9;
+  }
 }
 `;
 
