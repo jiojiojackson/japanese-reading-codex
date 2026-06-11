@@ -12,6 +12,8 @@
 - 公共预览页地址为 `/view/{id}`。
 - 所有公共预览页引用同一个 R2 中的 `assets/document.css`。
 - 预览 HTML 缓存 5 分钟，公共 CSS 缓存 1 年。
+- 编辑器和 API 使用账号密码保护，账号密码保存在 Cloudflare Pages 环境变量。
+- 公共分享页 `/view/{id}` 保持所有人可访问。
 
 ## 项目结构
 
@@ -21,6 +23,7 @@ public/
   app.css           # 编辑器样式
   app.js            # 编辑器交互
 functions/
+  _middleware.js    # 编辑器访问控制
   api/docs.js       # 列表、创建
   api/docs/[id].js  # 读取、更新、删除
   view/[id].js      # 公共分享 HTML
@@ -44,6 +47,15 @@ npm run dev
 ```
 
 本地开发会使用 Wrangler 的本地 R2 模拟存储。打开终端里显示的 localhost 地址即可。
+
+本地开发时可以新建 `.dev.vars`，内容如下：
+
+```text
+EDITOR_USERNAME=admin
+EDITOR_PASSWORD=change-this-password
+```
+
+`.dev.vars` 已加入 `.gitignore`，不要把真实密码提交到 GitHub。
 
 ## 上传到 GitHub
 
@@ -78,18 +90,34 @@ git push -u origin main
 8. 设置：
    - Variable name: `DOCS_BUCKET`
    - R2 bucket: `furigana-docs`
-9. 保存绑定后，重新部署一次项目，让绑定生效。
+9. 设置编辑器账号密码环境变量：
+   - 进入 **Settings > Environment variables**。
+   - 添加变量 `EDITOR_USERNAME`，值为你的登录账号，例如 `admin`。
+   - 添加变量 `EDITOR_PASSWORD`，值为你的登录密码。
+   - 如果 Dashboard 显示 **Variables and Secrets**，也可以在这里添加同名变量。
+10. 保存绑定和环境变量后，重新部署一次项目，让配置生效。
 
 Cloudflare 官方文档说明 Pages Functions 可以通过绑定访问 R2，并且 Dashboard 路径是 **Workers & Pages > 你的 Pages 项目 > Settings > Bindings > Add > R2 bucket**。官方 Git 集成文档也说明 Pages 可以连接 GitHub 仓库后自动部署。
 
-## 建议的访问控制
+## 访问控制
 
-公共分享页 `/view/{id}` 是给别人查看的；编辑器和 `/api/*` 默认也是公开的。正式使用时，建议在 Cloudflare Dashboard 给编辑器加 Cloudflare Access：
+应用使用 HTTP Basic Auth 保护编辑器。访问首页、编辑器静态资源和 `/api/*` 时，浏览器会弹出账号密码输入框。
 
-- 保护路径：`/` 和 `/api/*`
-- 放行路径：`/view/*` 和 `/assets/document.css`
+需要在 Cloudflare Pages 环境变量中配置：
 
-这样别人只能看分享链接，不能进入编辑器管理文档。
+```text
+EDITOR_USERNAME
+EDITOR_PASSWORD
+```
+
+公共分享页不需要登录：
+
+```text
+/view/{id}
+/assets/document.css
+```
+
+如果没有设置 `EDITOR_USERNAME` 或 `EDITOR_PASSWORD`，编辑器会返回配置错误，不会开放访问。
 
 ## 参考文档
 
