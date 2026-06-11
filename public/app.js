@@ -11,6 +11,7 @@ let currentDocId = null;
 let currentTitle = "";
 let annotations = new Map();
 let isDirty = false;
+let previousSource = "";
 
 const kanjiPattern = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 
@@ -23,6 +24,58 @@ function setDirty(value) {
 
 function annotationKey(index, char) {
   return `${index}:${char}`;
+}
+
+function parseAnnotationKey(key) {
+  const separator = key.indexOf(":");
+  return {
+    index: Number(key.slice(0, separator)),
+    char: key.slice(separator + 1)
+  };
+}
+
+function reconcileAnnotations(oldText, newText) {
+  if (oldText === newText || annotations.size === 0) return;
+
+  let prefix = 0;
+  while (
+    prefix < oldText.length &&
+    prefix < newText.length &&
+    oldText[prefix] === newText[prefix]
+  ) {
+    prefix += 1;
+  }
+
+  let suffix = 0;
+  while (
+    suffix < oldText.length - prefix &&
+    suffix < newText.length - prefix &&
+    oldText[oldText.length - 1 - suffix] === newText[newText.length - 1 - suffix]
+  ) {
+    suffix += 1;
+  }
+
+  const oldChangedEnd = oldText.length - suffix;
+  const newChangedEnd = newText.length - suffix;
+  const offset = newChangedEnd - oldChangedEnd;
+  const next = new Map();
+
+  for (const [key, ruby] of annotations) {
+    const { index, char } = parseAnnotationKey(key);
+    let nextIndex = null;
+
+    if (index < prefix) {
+      nextIndex = index;
+    } else if (index >= oldChangedEnd) {
+      nextIndex = index + offset;
+    }
+
+    if (nextIndex !== null && newText[nextIndex] === char) {
+      next.set(annotationKey(nextIndex, char), ruby);
+    }
+  }
+
+  annotations = next;
 }
 
 function resizeRubyInput(input) {
@@ -98,6 +151,7 @@ function loadDocument(doc) {
     annotations.set(annotationKey(item.index, item.char), item.ruby);
   }
   sourceText.value = doc.source || "";
+  previousSource = sourceText.value;
   renderPreview();
   setDirty(false);
 }
@@ -107,6 +161,7 @@ function resetEditor() {
   currentTitle = "";
   annotations = new Map();
   sourceText.value = "";
+  previousSource = "";
   renderPreview();
   setDirty(false);
 }
@@ -201,14 +256,9 @@ async function loadDocs() {
 }
 
 sourceText.addEventListener("input", () => {
-  const validKeys = new Set();
   const text = sourceText.value;
-  for (let index = 0; index < text.length; index += 1) {
-    validKeys.add(annotationKey(index, text[index]));
-  }
-  for (const key of annotations.keys()) {
-    if (!validKeys.has(key)) annotations.delete(key);
-  }
+  reconcileAnnotations(previousSource, text);
+  previousSource = text;
   renderPreview();
   setDirty(true);
 });
@@ -219,6 +269,7 @@ newButton.addEventListener("click", () => {
 });
 refreshButton.addEventListener("click", () => loadDocs().catch((error) => alert(error.message)));
 
+previousSource = sourceText.value;
 renderPreview();
 loadDocs().catch((error) => {
   docsList.innerHTML = `<p class="empty">${error.message}</p>`;
